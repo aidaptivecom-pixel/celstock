@@ -2,25 +2,21 @@ import { funnel } from "@/data/mock";
 
 export default function Funnel() {
   return (
-    <div className="bg-white border border-border rounded-xl p-5">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[15px] font-bold">Funnel de conversión</h3>
-      </div>
-      <div className="flex flex-col gap-2">
+    <div className="bg-white border border-border rounded-2xl p-5">
+      <h3 className="text-[15px] font-bold mb-5">Funnel de conversión</h3>
+      <div className="flex flex-col gap-3">
         {funnel.map((f) => (
-          <div key={f.label} className="flex items-center gap-2.5">
-            <span className="text-xs font-medium text-subtle w-[90px] shrink-0">{f.label}</span>
-            <div className="flex-1 h-6 bg-gray-100 rounded-md overflow-hidden">
+          <div key={f.label} className="flex items-center gap-3">
+            <span className="text-xs font-medium text-subtle w-[85px] shrink-0">{f.label}</span>
+            <div className="flex-1 h-7 bg-gray-50 rounded-xl overflow-hidden">
               <div
-                className="h-full rounded-md flex items-center pl-2.5 text-[11px] font-semibold text-white transition-all duration-500"
-                style={{ width: `${f.pct}%`, background: f.color }}
+                className="h-full rounded-xl flex items-center pl-3 text-[11px] font-bold text-white transition-all duration-700 ease-out"
+                style={{ width: `${Math.max(f.pct, 8)}%`, background: `linear-gradient(90deg, ${f.color}, ${f.color}dd)` }}
               >
-                {f.pct > 10 ? f.value : ""}
+                {f.pct > 12 ? f.value : ""}
               </div>
             </div>
-            <span className="text-[11px] text-muted w-10 text-right shrink-0">
-              {f.pct === 100 ? "" : f.value}
-            </span>
+            <span className="text-[12px] font-semibold text-text w-14 text-right shrink-0">{f.value}</span>
           </div>
         ))}
       </div>

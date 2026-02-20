@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
 import AgentBar from "@/components/AgentBar";
@@ -11,29 +12,29 @@ import Subscribers from "@/components/Subscribers";
 import Content from "@/components/Content";
 import Influencers from "@/components/Influencers";
 import Campaigns from "@/components/Campaigns";
-import { useState } from "react";
 
 export default function Dashboard() {
   const [period, setPeriod] = useState("30d");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-bg">
-      <Sidebar />
-      <Topbar />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Topbar onMenuClick={() => setSidebarOpen(true)} />
 
-      <main className="lg:ml-[230px] mt-16 p-7">
+      <main className="lg:ml-[240px] mt-16 p-4 sm:p-6 lg:p-7">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
           <div>
-            <h1 className="text-[22px] font-bold">Dashboard</h1>
+            <h1 className="text-xl sm:text-[22px] font-bold">Dashboard</h1>
             <p className="text-[13px] text-muted mt-0.5">Últimos 30 días · Actualizado hace 5 min</p>
           </div>
-          <div className="flex bg-white border border-border rounded-lg overflow-hidden">
+          <div className="flex bg-white border border-border rounded-xl overflow-hidden shadow-sm">
             {["7d", "30d", "90d"].map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                className={`px-4 py-2 text-xs font-semibold transition-all ${
                   period === p ? "bg-primary text-white" : "text-subtle hover:bg-gray-50"
                 }`}
               >
@@ -46,7 +47,7 @@ export default function Dashboard() {
         <AgentBar />
         <KpiCards />
 
-        {/* Charts row */}
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
           <LeadsChart />
           <Funnel />
@@ -65,7 +66,7 @@ export default function Dashboard() {
         </div>
 
         {/* Influencers + Campaigns */}
-        <div className="grid grid-cols-1 xl:grid-cols-[5fr_3fr] gap-5 mb-5">
+        <div className="grid grid-cols-1 xl:grid-cols-[5fr_3fr] gap-5 mb-8">
           <Influencers />
           <Campaigns />
         </div>
