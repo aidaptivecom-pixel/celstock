@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cel Stock Argentina — Propuesta</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+  }
+  
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 60px 80px;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slide.active { display: flex; }
+  
+  .slide-counter {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.3);
+    font-weight: 500;
+    z-index: 100;
+  }
+  
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 100;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.2); }
+  
+  .logo-bar {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+  }
+  
+  h1 { font-size: 64px; font-weight: 900; line-height: 1.05; margin-bottom: 20px; letter-spacing: -2px; }
+  h2 { font-size: 44px; font-weight: 800; line-height: 1.15; margin-bottom: 24px; letter-spacing: -1px; }
+  h3 { font-size: 20px; font-weight: 600; margin-bottom: 16px; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 2px; }
+  p { font-size: 20px; line-height: 1.6; color: rgba(255,255,255,0.75); max-width: 700px; }
+  .subtitle { font-size: 24px; color: rgba(255,255,255,0.5); font-weight: 400; margin-bottom: 40px; }
+  
+  .accent { color: #4FC3F7; }
+  .accent-green { color: #66BB6A; }
+  .accent-orange { color: #FFB74D; }
+  .accent-purple { color: #CE93D8; }
+  .accent-red { color: #EF5350; }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .stat-number { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+  .stat-label { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+  
+  .items { list-style: none; margin-top: 24px; }
+  .items li {
+    font-size: 20px; line-height: 1.5; padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+  }
+  .items li:last-child { border-bottom: none; }
+  .items li span.icon { margin-right: 12px; font-size: 22px; }
+  
+  .flow { display: flex; flex-direction: column; gap: 0; margin-top: 30px; align-items: flex-start; }
+  .flow-step {
+    background: rgba(79, 195, 247, 0.08);
+    border: 1px solid rgba(79, 195, 247, 0.2);
+    border-radius: 12px;
+    padding: 16px 28px;
+    font-size: 17px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+  }
+  .flow-arrow { font-size: 22px; color: rgba(79, 195, 247, 0.4); padding: 4px 0 4px 20px; }
+  
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+  .cards.three { grid-template-columns: 1fr 1fr 1fr; }
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .card h4 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .card p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .card.highlight { border-color: rgba(79, 195, 247, 0.3); background: rgba(79, 195, 247, 0.05); }
+  .card.highlight-green { border-color: rgba(102, 187, 106, 0.3); background: rgba(102, 187, 106, 0.05); }
+  .card.highlight-orange { border-color: rgba(255, 183, 77, 0.3); background: rgba(255, 183, 77, 0.05); }
+  .card.highlight-purple { border-color: rgba(206, 147, 216, 0.3); background: rgba(206, 147, 216, 0.05); }
+  
+  .timeline { margin-top: 36px; display: flex; flex-direction: column; gap: 20px; }
+  .timeline-item { display: flex; align-items: flex-start; gap: 20px; }
+  .timeline-badge {
+    background: rgba(79, 195, 247, 0.15);
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4FC3F7;
+    white-space: nowrap;
+    min-width: 110px;
+    text-align: center;
+  }
+  .timeline-content h4 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .timeline-content p { font-size: 15px; color: rgba(255,255,255,0.5); }
+  
+  .benefits { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .benefit { display: flex; align-items: center; gap: 16px; font-size: 20px; color: rgba(255,255,255,0.8); }
+  .benefit-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .bg-blue { background: rgba(79, 195, 247, 0.15); }
+  .bg-green { background: rgba(102, 187, 106, 0.15); }
+  .bg-orange { background: rgba(255, 183, 77, 0.15); }
+  .bg-purple { background: rgba(206, 147, 216, 0.15); }
+  
+  .steps { margin-top: 36px; counter-reset: step; }
+  .step {
+    display: flex; align-items: center; gap: 20px;
+    padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 20px; color: rgba(255,255,255,0.8);
+  }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(79, 195, 247, 0.15); color: #4FC3F7;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
+  }
+  
+  .cover-bg {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(79, 195, 247, 0.08) 0%, transparent 60%);
+    z-index: 0;
+  }
+  .cover-content { position: relative; z-index: 1; }
+  
+  .tag {
+    display: inline-block;
+    background: rgba(79, 195, 247, 0.12);
+    border: 1px solid rgba(79, 195, 247, 0.25);
+    color: #4FC3F7;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  
+  .usa-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 8px 18px; border-radius: 8px;
+    font-size: 14px; color: rgba(255,255,255,0.5);
+    margin-top: 32px;
+  }
+
+  .inv-table { margin-top: 32px; width: 100%; max-width: 700px; }
+  .inv-row {
+    display: flex; justify-content: space-between;
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 18px;
+  }
+  .inv-label { color: rgba(255,255,255,0.7); }
+  .inv-value { font-weight: 700; color: #fff; }
+
+  /* Ecosystem diagram */
+  .eco-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .eco-hub {
+    background: linear-gradient(135deg, rgba(79,195,247,0.2), rgba(206,147,216,0.2));
+    border: 2px solid rgba(79,195,247,0.4);
+    border-radius: 20px;
+    padding: 20px 40px;
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .eco-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .eco-node {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  .eco-node .eco-icon { font-size: 28px; margin-bottom: 8px; }
+  .eco-node .eco-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .eco-node .eco-desc { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+  /* Mini flow horizontal */
+  .hflow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .hflow-step {
+    background: rgba(79,195,247,0.08);
+    border: 1px solid rgba(79,195,247,0.2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .hflow-arrow { color: rgba(79,195,247,0.4); font-size: 18px; }
+
+  /* Section divider */
+  .section-tag {
+    display: inline-block;
+    background: rgba(206,147,216,0.12);
+    border: 1px solid rgba(206,147,216,0.25);
+    color: #CE93D8;
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-tag.blue { background: rgba(79,195,247,0.12); border-color: rgba(79,195,247,0.25); color: #4FC3F7; }
+  .section-tag.green { background: rgba(102,187,106,0.12); border-color: rgba(102,187,106,0.25); color: #66BB6A; }
+  .section-tag.orange { background: rgba(255,183,77,0.12); border-color: rgba(255,183,77,0.25); color: #FFB74D; }
+
+  .small-text { font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide active" id="s1">
+  <div class="cover-bg"></div>
+  <div class="cover-content">
+    <div class="tag">Propuesta de expansión regional</div>
+    <h1>CEL STOCK<br><span class="accent">Argentina</span></h1>
+    <p class="subtitle">Marketing automatizado con inteligencia artificial para escalar la captación de suscriptores en el mercado argentino.</p>
+    <div class="usa-badge">🇺🇸 Con base en Estados Unidos</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: OPORTUNIDAD -->
+<div class="slide" id="s2">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>La oportunidad</h3>
+  <h2>Argentina: mercado masivo,<br>sin herramientas profesionales</h2>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number accent">8.5M</div>
+      <div class="stat-label">Smartphones vendidos por año en Argentina</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number accent-orange">334K</div>
+      <div class="stat-label">Celulares importados legalmente en 2025 — el informal es mucho mayor</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number accent-green">2x</div>
+      <div class="stat-label">Precio de un iPhone en Argentina vs. EEUU — los revendedores mueven el 20% del mercado</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number accent-red">0%</div>
+      <div class="stat-label">Arancel a importación desde enero 2026 — el mercado se profesionaliza</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: PROBLEMA -->
+<div class="slide" id="s3">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>El problema</h3>
+  <h2>Los revendedores argentinos<br>operan sin sistema</h2>
+  <ul class="items">
+    <li><span class="icon">📋</span> Planillas de Excel o cuadernos para gestionar stock</li>
+    <li><span class="icon">💬</span> WhatsApp para todo: ventas, stock, cobros, consultas</li>
+    <li><span class="icon">🔍</span> Sin trazabilidad de IMEI ni historial de dispositivos</li>
+    <li><span class="icon">💸</span> Sin control real de márgenes y rentabilidad</li>
+    <li><span class="icon">📱</span> Publicidad improvisada: Instagram + boca a boca</li>
+  </ul>
+  <p style="margin-top: 32px; font-size: 22px; font-weight: 600; color: #4FC3F7;">Cel Stock resuelve todo esto.<br>Pero necesita llegar a ellos.</p>
+</div>
+
+<!-- SLIDE 4: PROPUESTA -->
+<div class="slide" id="s4">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>La propuesta</h3>
+  <h2>Operación regional de marketing<br>en <span class="accent">Argentina</span></h2>
+  <div class="cards">
+    <div class="card">
+      <h4>🎯 Captar revendedores</h4>
+      <p>Campañas en Meta Ads segmentadas por perfil de revendedor (chico, mediano, grande)</p>
+    </div>
+    <div class="card">
+      <h4>🔄 Convertir leads</h4>
+      <p>Landing pages optimizadas + nurturing automatizado hasta la suscripción</p>
+    </div>
+    <div class="card">
+      <h4>💬 Nutrir y retener</h4>
+      <p>WhatsApp automatizado + secuencias de email personalizadas por segmento</p>
+    </div>
+    <div class="card">
+      <h4>📈 Escalar sin equipo</h4>
+      <p>IA + automatización: funciona con 1 persona supervisando, no operando</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: FLUJO GENERAL -->
+<div class="slide" id="s5">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Sistema automatizado</h3>
+  <h2>Del anuncio a la suscripción,<br>sin intervención manual</h2>
+  <div class="flow">
+    <div class="flow-step">📣 Meta Ads (Instagram / Facebook / Google)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">🌐 Landing Page — Cel Stock Argentina</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">📝 Formulario de registro / WhatsApp</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">🤖 Motor de IA — Clasificación + Scoring + Asignación</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">💬 Nurturing multi-canal (WhatsApp + Email + Retargeting)</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step">🎯 Trial / Demo automatizada de Cel Stock</div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step" style="border-color: rgba(102,187,106,0.4); background: rgba(102,187,106,0.08);">✅ Conversión a suscripción + Onboarding automatizado</div>
+  </div>
+</div>
+
+<!-- SLIDE 6: ECOSISTEMA IA - OVERVIEW -->
+<div class="slide" id="s6">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag">Ecosistema de inteligencia artificial</div>
+  <h2>Un sistema completo<br>que opera <span class="accent">solo</span></h2>
+  <p style="margin-bottom: 24px;">Cada módulo trabaja de forma autónoma y se conecta con los demás. Salvador supervisa desde un dashboard unificado.</p>
+  <div class="eco-center">
+    <div class="eco-hub">🧠 MOTOR CENTRAL DE IA</div>
+    <div class="eco-grid">
+      <div class="eco-node">
+        <div class="eco-icon">🎯</div>
+        <div class="eco-title">Clasificador de Leads</div>
+        <div class="eco-desc">Scoring automático por perfil</div>
+      </div>
+      <div class="eco-node">
+        <div class="eco-icon">📣</div>
+        <div class="eco-title">Gestor de Campañas</div>
+        <div class="eco-desc">Meta Ads + Google Ads con IA</div>
+      </div>
+      <div class="eco-node">
+        <div class="eco-icon">🎨</div>
+        <div class="eco-title">Creador de Contenido</div>
+        <div class="eco-desc">Posts, reels, copies automáticos</div>
+      </div>
+      <div class="eco-node">
+        <div class="eco-icon">💬</div>
+        <div class="eco-title">Agente de WhatsApp</div>
+        <div class="eco-desc">Atención 24/7 en español</div>
+      </div>
+      <div class="eco-node">
+        <div class="eco-icon">📊</div>
+        <div class="eco-title">Dashboard de Métricas</div>
+        <div class="eco-desc">ROI, CAC, LTV en tiempo real</div>
+      </div>
+      <div class="eco-node">
+        <div class="eco-icon">🤝</div>
+        <div class="eco-title">Red de Influencers</div>
+        <div class="eco-desc">Gestión automatizada de colaboraciones</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: CLASIFICADOR DE LEADS -->
+<div class="slide" id="s7">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag blue">Módulo 1</div>
+  <h2>Clasificador inteligente<br>de <span class="accent">leads</span></h2>
+  <div class="cards">
+    <div class="card highlight">
+      <h4>🔍 Detección automática de perfil</h4>
+      <p>La IA analiza cada lead al instante: cantidad de dispositivos que maneja, volumen de ventas, ubicación geográfica, canales de venta actuales. Sin formularios largos — extrae datos de la conversación.</p>
+    </div>
+    <div class="card highlight">
+      <h4>📊 Lead Scoring predictivo</h4>
+      <p>Cada lead recibe un score de 0-100 basado en probabilidad de conversión. El sistema aprende de cada venta cerrada y ajusta el modelo automáticamente.</p>
+    </div>
+    <div class="card highlight">
+      <h4>🏷️ Segmentación dinámica</h4>
+      <p><strong>Micro</strong> (1-10 iPhones/mes) → Onboarding self-service<br><strong>Medio</strong> (10-50/mes) → Demo personalizada<br><strong>Grande</strong> (50+/mes) → Contacto directo con Salvador</p>
+    </div>
+    <div class="card highlight">
+      <h4>⚡ Ruta automática</h4>
+      <p>Cada segmento entra en un flujo diferente de nurturing. Sin decisión manual. El lead correcto recibe el mensaje correcto en el momento correcto.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: GESTOR DE CAMPAÑAS -->
+<div class="slide" id="s8">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag orange">Módulo 2</div>
+  <h2>Gestión automatizada<br>de <span class="accent-orange">campañas publicitarias</span></h2>
+  <div class="cards">
+    <div class="card highlight-orange">
+      <h4>📣 Multi-plataforma</h4>
+      <p>Meta Ads (Facebook + Instagram), Google Ads, YouTube Ads, TikTok Ads. Todo gestionado desde un solo panel con reglas de optimización automáticas.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>🧪 A/B Testing automático</h4>
+      <p>La IA genera variantes de anuncios (copies, imágenes, audiencias), las testea simultáneamente, y escala la que mejor convierte. Sin intervención.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>💰 Optimización de presupuesto</h4>
+      <p>Redistribución automática del presupuesto hacia las campañas con mejor CAC (Costo de Adquisición). Si un anuncio no performa, se pausa solo.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>🔄 Retargeting inteligente</h4>
+      <p>Visitó la landing pero no se registró → retargeting personalizado. Empezó el trial pero no convirtió → secuencia de recuperación. Todo automático.</p>
+    </div>
+  </div>
+  <p class="small-text">Integración directa con Meta Business API, Google Ads API y plataformas de analytics.</p>
+</div>
+
+<!-- SLIDE 9: CREACION DE CONTENIDO -->
+<div class="slide" id="s9">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag">Módulo 3</div>
+  <h2>Creación de contenido<br><span class="accent-purple">automatizado con IA</span></h2>
+  <div class="cards three">
+    <div class="card highlight-purple">
+      <h4>📝 Posts y Copies</h4>
+      <p>Generación automática de posts para Instagram, Facebook y LinkedIn. Calendario editorial que se llena solo. Tono adaptado al mercado argentino.</p>
+    </div>
+    <div class="card highlight-purple">
+      <h4>🎬 Reels y Videos</h4>
+      <p>Scripts para reels generados por IA. Templates de video editables. Subtítulos automáticos. Optimizados para engagement en cada plataforma.</p>
+    </div>
+    <div class="card highlight-purple">
+      <h4>📧 Email Marketing</h4>
+      <p>Secuencias de email personalizadas por segmento. Welcome series, nurturing, re-engagement. Subjects testeados con IA para máximo open rate.</p>
+    </div>
+    <div class="card highlight-purple">
+      <h4>📰 Blog y SEO</h4>
+      <p>Artículos SEO sobre gestión de stock, tips para revendedores, tendencias del mercado. Posicionamiento orgánico que genera leads gratis.</p>
+    </div>
+    <div class="card highlight-purple">
+      <h4>🎨 Diseño gráfico</h4>
+      <p>Piezas gráficas generadas con IA adaptadas a la identidad de Cel Stock. Stories, carruseles, infografías. Sin necesidad de diseñador.</p>
+    </div>
+    <div class="card highlight-purple">
+      <h4>📋 Casos de éxito</h4>
+      <p>Generación automática de case studies a partir de datos de uso de clientes. Testimonios formateados para ads y landing pages.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: AGENTE DE WHATSAPP -->
+<div class="slide" id="s10">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag green">Módulo 4</div>
+  <h2>Agente de marketing<br><span class="accent-green">por WhatsApp</span></h2>
+  <div class="cards">
+    <div class="card highlight-green">
+      <h4>🤖 Atención 24/7</h4>
+      <p>Agente de IA que responde consultas sobre Cel Stock en español argentino. Entiende contexto, responde preguntas técnicas, agenda demos, y escala a Salvador cuando detecta un lead caliente.</p>
+    </div>
+    <div class="card highlight-green">
+      <h4>📊 Calificación en conversación</h4>
+      <p>Mientras conversa, el agente clasifica al lead en tiempo real. Detecta intención de compra, tamaño del negocio, y urgencia. Todo sin que el lead llene un formulario.</p>
+    </div>
+    <div class="card highlight-green">
+      <h4>🔔 Seguimiento proactivo</h4>
+      <p>Si un lead no responde en 24hs → follow-up automático. Si pidió demo y no se conectó → recordatorio. Si el trial está por vencer → oferta de conversión.</p>
+    </div>
+    <div class="card highlight-green">
+      <h4>📈 Onboarding automatizado</h4>
+      <p>Una vez que el revendedor se suscribe, el agente lo guía paso a paso para configurar Cel Stock. Tutoriales, tips, y soporte básico sin intervención humana.</p>
+    </div>
+  </div>
+  <div class="hflow">
+    <div class="hflow-step">Lead escribe</div>
+    <div class="hflow-arrow">→</div>
+    <div class="hflow-step">IA responde</div>
+    <div class="hflow-arrow">→</div>
+    <div class="hflow-step">Clasifica</div>
+    <div class="hflow-arrow">→</div>
+    <div class="hflow-step">Agenda demo</div>
+    <div class="hflow-arrow">→</div>
+    <div class="hflow-step">Convierte</div>
+    <div class="hflow-arrow">→</div>
+    <div class="hflow-step" style="border-color: rgba(102,187,106,0.4);">Onboarding</div>
+  </div>
+</div>
+
+<!-- SLIDE 11: INFLUENCERS -->
+<div class="slide" id="s11">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag orange">Módulo 5</div>
+  <h2>Red de influencers<br><span class="accent-orange">digitales</span></h2>
+  <div class="cards">
+    <div class="card highlight-orange">
+      <h4>🔍 Identificación automatizada</h4>
+      <p>La IA escanea Instagram, TikTok y YouTube buscando micro-influencers del nicho: revendedores de tecnología, reviewers de iPhones, emprendedores digitales en Argentina. Filtra por engagement real, no por seguidores.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>📩 Outreach automatizado</h4>
+      <p>Mensajes personalizados generados por IA para cada influencer. Propuestas de colaboración adaptadas a su perfil y audiencia. Follow-ups automáticos.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>📊 Tracking de performance</h4>
+      <p>Cada influencer tiene un link/código único. Se mide: impresiones, clicks, registros y conversiones reales. ROI por influencer en tiempo real.</p>
+    </div>
+    <div class="card highlight-orange">
+      <h4>💰 Gestión de pagos y comisiones</h4>
+      <p>Sistema de afiliados: cada influencer cobra por conversión. El sistema calcula comisiones, genera reportes, y gestiona los pagos automáticamente.</p>
+    </div>
+  </div>
+  <p class="small-text">Modelo escalable: empezamos con 5-10 micro-influencers y crecemos según resultados.</p>
+</div>
+
+<!-- SLIDE 12: METRICAS Y DASHBOARD -->
+<div class="slide" id="s12">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag blue">Módulo 6</div>
+  <h2>Dashboard de métricas<br><span class="accent">en tiempo real</span></h2>
+  <div class="cards three">
+    <div class="card">
+      <h4 class="accent">CAC</h4>
+      <p>Costo de Adquisición por Cliente. Cuánto cuesta traer cada nuevo suscriptor, desglosado por canal y campaña.</p>
+    </div>
+    <div class="card">
+      <h4 class="accent-green">LTV</h4>
+      <p>Lifetime Value. Cuánto vale cada cliente en el tiempo. Predicción de churn con IA.</p>
+    </div>
+    <div class="card">
+      <h4 class="accent-orange">ROI</h4>
+      <p>Retorno sobre inversión por canal, por campaña, por influencer. Actualizado en tiempo real.</p>
+    </div>
+    <div class="card">
+      <h4 class="accent-purple">Funnel</h4>
+      <p>Visualización completa del embudo: impresiones → clicks → leads → trials → suscriptores. Identificación de cuellos de botella.</p>
+    </div>
+    <div class="card">
+      <h4 class="accent">Engagement</h4>
+      <p>Métricas de contenido: likes, shares, saves, CTR. Qué tipo de contenido genera más conversiones.</p>
+    </div>
+    <div class="card">
+      <h4 class="accent-green">Reportes</h4>
+      <p>Reportes semanales y mensuales generados automáticamente por IA. Listos para enviar a New Life con insights y recomendaciones.</p>
+    </div>
+  </div>
+  <p class="small-text">Salvador y New Life acceden al mismo dashboard. Transparencia total.</p>
+</div>
+
+<!-- SLIDE 13: TRAZABILIDAD -->
+<div class="slide" id="s13">
+  <div class="logo-bar">CEL STOCK</div>
+  <div class="section-tag green">Trazabilidad completa</div>
+  <h2>Cada lead tiene<br><span class="accent-green">historia completa</span></h2>
+  <ul class="items">
+    <li><span class="icon">📍</span> <strong>Origen:</strong> De qué campaña, anuncio y plataforma vino el lead</li>
+    <li><span class="icon">💬</span> <strong>Conversaciones:</strong> Historial completo de chat con el agente de WhatsApp</li>
+    <li><span class="icon">📊</span> <strong>Score:</strong> Evolución del lead scoring en el tiempo</li>
+    <li><span class="icon">📧</span> <strong>Interacciones:</strong> Emails abiertos, links clickeados, páginas visitadas</li>
+    <li><span class="icon">🎯</span> <strong>Conversión:</strong> Cuándo, cómo y por qué convirtió (o no)</li>
+    <li><span class="icon">💰</span> <strong>Atribución:</strong> Qué canal/contenido/influencer generó cada venta</li>
+  </ul>
+  <p style="margin-top: 24px;">Cada dólar invertido se puede rastrear hasta la conversión final. Sin puntos ciegos.</p>
+</div>
+
+<!-- SLIDE 14: MARCA -->
+<div class="slide" id="s14">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Identidad de marca</h3>
+  <h2><span class="accent">Cel Stock Argentina</span><br>Extensión directa de la marca USA</h2>
+  <ul class="items" style="max-width: 600px;">
+    <li><span class="icon">📱</span> Redes sociales: <strong>@celstock.ar</strong></li>
+    <li><span class="icon">🌐</span> Landing: <strong>celstock.com/ar</strong> o <strong>celstock.com.ar</strong></li>
+    <li><span class="icon">🇺🇸</span> Referencia constante a base en Estados Unidos</li>
+    <li><span class="icon">🎨</span> Misma identidad visual, adaptada al mercado local</li>
+    <li><span class="icon">🤝</span> Confianza: marca internacional con presencia local</li>
+  </ul>
+</div>
+
+<!-- SLIDE 15: PLAN -->
+<div class="slide" id="s15">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Plan de ejecución</h3>
+  <h2>De cero a resultados<br>en 90 días</h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-badge">Semana 1-2</div>
+      <div class="timeline-content">
+        <h4>Setup</h4>
+        <p>Redes sociales, landing page, agente WhatsApp, configuración de campañas y automatizaciones</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-badge">Semana 3-4</div>
+      <div class="timeline-content">
+        <h4>Lanzamiento</h4>
+        <p>Primeras campañas activas, agente respondiendo, contenido publicándose, primeros influencers contactados</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-badge">Mes 2</div>
+      <div class="timeline-content">
+        <h4>Optimización</h4>
+        <p>A/B testing con datos reales, ajuste de scoring, activación completa de todos los módulos de IA</p>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-badge">Mes 3+</div>
+      <div class="timeline-content">
+        <h4>Escala</h4>
+        <p>Ampliar inversión en lo que funciona, expandir red de influencers, replicar modelo en otros países LATAM</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: INVERSION -->
+<div class="slide" id="s16">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Inversión estimada</h3>
+  <h2>Estructura de costos<br>escalable y eficiente</h2>
+  <div class="inv-table">
+    <div class="inv-row">
+      <span class="inv-label">📣 Meta + Google Ads (mensual)</span>
+      <span class="inv-value accent">USD 500 — 2,000</span>
+    </div>
+    <div class="inv-row">
+      <span class="inv-label">🤝 Red de influencers (comisiones)</span>
+      <span class="inv-value accent">Variable por conversión</span>
+    </div>
+    <div class="inv-row">
+      <span class="inv-label">⚙️ Infraestructura (IA, hosting, WhatsApp API)</span>
+      <span class="inv-value accent">USD 150 — 300/mes</span>
+    </div>
+    <div class="inv-row">
+      <span class="inv-label">🚀 Setup inicial (ecosistema completo)</span>
+      <span class="inv-value accent">A definir (one-time)</span>
+    </div>
+    <div class="inv-row" style="border-bottom: none;">
+      <span class="inv-label">👤 Operación</span>
+      <span class="inv-value accent-green">Salvador supervisa desde dashboard</span>
+    </div>
+  </div>
+  <p style="margin-top: 32px; font-size: 16px;">Todo escala según resultados. Se invierte más en lo que funciona, se corta lo que no.</p>
+</div>
+
+<!-- SLIDE 17: BENEFICIOS -->
+<div class="slide" id="s17">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Beneficios para New Life</h3>
+  <h2>Expansión a LATAM<br>sin costo de equipo</h2>
+  <div class="benefits">
+    <div class="benefit">
+      <div class="benefit-icon bg-blue">🌎</div>
+      Expansión a Latinoamérica sin contratar equipo local
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon bg-blue">🏷️</div>
+      Marca unificada — todo bajo Cel Stock, base USA
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon bg-green">📉</div>
+      Bajo riesgo — inversión 100% escalable según resultados
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon bg-orange">📊</div>
+      Datos reales del mercado argentino para adaptar el producto
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon bg-green">🔁</div>
+      Modelo replicable — Argentina → Chile → Colombia → México
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon bg-purple">🤖</div>
+      Tecnología de punta — IA operando 24/7 sin costo de personal
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: NEXT STEPS -->
+<div class="slide" id="s18">
+  <div class="logo-bar">CEL STOCK</div>
+  <h3>Próximos pasos</h3>
+  <h2>De la aprobación<br>al lanzamiento</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      Aprobación de New Life para operar marketing en Argentina
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      Definir guidelines de marca, accesos y materiales
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      Setup del ecosistema completo de IA — 2 semanas
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      Lanzamiento de campañas + agente WhatsApp — semana 3
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      Primer reporte de métricas a New Life — mes 1
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      Evaluación de expansión a otros países LATAM — mes 3
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CIERRE -->
+<div class="slide" id="s19">
+  <div class="cover-bg"></div>
+  <div class="cover-content" style="text-align: center; align-items: center;">
+    <h1 style="font-size: 56px;">CEL STOCK<br><span class="accent">Argentina</span></h1>
+    <p class="subtitle" style="text-align: center;">Gestión profesional para el negocio de smartphones<br>Marketing automatizado con inteligencia artificial</p>
+    <div class="usa-badge">🇺🇸 Con base en Estados Unidos</div>
+    <p style="margin-top: 48px; font-size: 18px; color: rgba(255,255,255,0.4);">Presentado por Salvador · Socio Cel Stock</p>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="slide-counter" id="counter">1 / 19</div>
+<div class="nav">
+  <button onclick="prev()">←</button>
+  <button onclick="next()">→</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const total = slides.length;
+  
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+  }
+  
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+  
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+  
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); }
+  });
+</script>
+
+</body>
+</html>
