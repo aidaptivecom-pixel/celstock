@@ -27,16 +27,16 @@ export default function KpiCards() {
         return (
           <div
             key={k.label}
-            className={`bg-white border border-border rounded-2xl p-5 border-t-[3px] ${c.border} hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default`}
+            className={`bg-white border border-border rounded-2xl p-5 border-t-[3px] ${c.border} hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default flex flex-col h-[160px]`}
           >
             <div className="flex items-center gap-2 mb-3">
-              <span className={`w-8 h-8 rounded-xl flex items-center justify-center ${c.bg} ${c.text}`}>
+              <span className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${c.bg} ${c.text}`}>
                 {iconComponents[k.icon]}
               </span>
-              <span className="text-[12px] text-muted font-medium leading-tight">{k.label}</span>
+              <span className="text-[11px] text-muted font-medium leading-tight line-clamp-2">{k.label}</span>
             </div>
-            <div className="text-[28px] font-extrabold leading-none tracking-tight">{k.value}</div>
-            <div className={`text-[11px] font-semibold mt-2.5 ${k.up ? "text-success" : "text-danger"}`}>
+            <div className="text-[28px] font-extrabold leading-none tracking-tight mt-auto">{k.value}</div>
+            <div className={`text-[11px] font-semibold mt-2 ${k.up ? "text-success" : "text-danger"}`}>
               {k.change}
             </div>
           </div>
