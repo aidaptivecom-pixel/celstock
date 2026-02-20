@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cel Stock Argentina — Flujos de Automatización</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at 30% 40%, rgba(232, 93, 4, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(83, 52, 131, 0.08) 0%, transparent 50%);
+  }
+
+  .hero > * { position: relative; z-index: 1; }
+
+  .logo-bar {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span { color: #e85d04; }
+
+  .hero p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.5);
+    max-width: 600px;
+  }
+
+  .section {
+    min-height: 100vh;
+    padding: 80px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #e85d04;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 60px;
+  }
+
+  /* ---- WORKFLOW CANVAS ---- */
+  .workflow-canvas {
+    width: 100%;
+    max-width: 1100px;
+    position: relative;
+    padding: 40px 0;
+  }
+
+  .workflow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .node {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px 24px;
+    min-width: 200px;
+    max-width: 260px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .node:hover {
+    border-color: rgba(232, 93, 4, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(232, 93, 4, 0.1);
+  }
+
+  .node-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .node-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .node-icon.trigger { background: #dc2626; }
+  .node-icon.process { background: #e85d04; }
+  .node-icon.ai { background: #7c3aed; }
+  .node-icon.action { background: #059669; }
+  .node-icon.data { background: #2563eb; }
+  .node-icon.output { background: #0891b2; }
+  .node-icon.condition { background: #d97706; }
+
+  .node-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .node-type {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .node-body {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.5;
+  }
+
+  .node-body li {
+    list-style: none;
+    padding: 2px 0;
+  }
+
+  .node-body li::before {
+    content: '→ ';
+    color: #e85d04;
+  }
+
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .connector svg {
+    width: 48px;
+    height: 24px;
+  }
+
+  .connector-down {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    margin: -8px 0;
+  }
+
+  .connector-down svg {
+    width: 24px;
+    height: 48px;
+  }
+
+  .branch-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin: -4px 0 8px;
+    font-weight: 500;
+  }
+
+  /* ---- FLOW SECTION (vertical) ---- */
+  .flow-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .flow-split {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+
+  .flow-split .node {
+    flex: 1;
+    min-width: 180px;
+    max-width: 240px;
+  }
+
+  /* ---- FLOW DIAGRAM HEADERS ---- */
+  .flow-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    padding: 16px 24px;
+    background: rgba(232, 93, 4, 0.08);
+    border: 1px solid rgba(232, 93, 4, 0.2);
+    border-radius: 12px;
+  }
+
+  .flow-header-num {
+    width: 32px;
+    height: 32px;
+    background: #e85d04;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .flow-header-text h3 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .flow-header-text p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* ---- STATS BAR ---- */
+  .stats-bar {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 48px;
+    padding: 32px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #e85d04;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 4px;
+  }
+
+  /* ---- FOOTER ---- */
+  .footer {
+    padding: 60px 24px;
+    text-align: center;
+    background: linear-gradient(180deg, transparent, rgba(232, 93, 4, 0.05));
+  }
+
+  .footer h2 {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .footer p {
+    color: rgba(255,255,255,0.4);
+    font-size: 16px;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .workflow-row { flex-direction: column; align-items: center; }
+    .connector { transform: rotate(90deg); width: 24px; height: 48px; }
+    .flow-split { flex-direction: column; align-items: center; }
+    .stats-bar { gap: 24px; }
+    .node { max-width: 300px; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="logo-bar">CEL STOCK · AUTOMATIZACIÓN</div>
+  <h1>Flujos de <span>automatización</span><br>con inteligencia artificial</h1>
+  <p>Cada flujo opera de forma autónoma. Salvador supervisa desde un dashboard, el sistema ejecuta solo.</p>
+</div>
+
+<!-- FLOW 1: CAPTACIÓN DE LEADS -->
+<div class="section" style="background: #151525;">
+  <div class="section-title">Flujo 1</div>
+  <h2>Captación de leads</h2>
+  <p class="section-desc">Desde el anuncio hasta el lead clasificado, sin intervención humana.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon trigger">📣</div>
+          <div>
+            <div class="node-name">Meta Ads</div>
+            <div class="node-type">TRIGGER</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Instagram &amp; Facebook Ads</li>
+          <li>Segmentado por perfil revendedor</li>
+          <li>Dispara al recibir lead</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon process">⚡</div>
+          <div>
+            <div class="node-name">Webhook n8n</div>
+            <div class="node-type">RECEPTOR</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Recibe datos del formulario</li>
+          <li>Valida campos obligatorios</li>
+          <li>Enriquece con datos públicos</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon ai">🧠</div>
+          <div>
+            <div class="node-name">Clasificador IA</div>
+            <div class="node-type">INTELIGENCIA ARTIFICIAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Scoring automático 1-100</li>
+          <li>Categoriza: chico / mediano / grande</li>
+          <li>Detecta intención de compra</li>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector-down"><svg><line x1="12" y1="0" x2="12" y2="48" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="8,42 12,48 16,42" fill="#e85d04"/></svg></div>
+
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon condition">🔀</div>
+          <div>
+            <div class="node-name">Router</div>
+            <div class="node-type">CONDICIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Score &gt; 70 → Lead caliente</li>
+          <li>Score 40-70 → Nurturing</li>
+          <li>Score &lt; 40 → Seguimiento pasivo</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon data">💾</div>
+          <div>
+            <div class="node-name">Base de Datos</div>
+            <div class="node-type">ALMACENAMIENTO</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Guarda lead con score y categoría</li>
+          <li>Historial de interacciones</li>
+          <li>Alimenta dashboard en tiempo real</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">💬</div>
+          <div>
+            <div class="node-name">WhatsApp API</div>
+            <div class="node-type">ACCIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Mensaje personalizado al lead</li>
+          <li>Template según categoría</li>
+          <li>Respuesta en &lt; 30 segundos</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 2: NURTURING AUTOMATIZADO -->
+<div class="section" style="background: #1a1a2e;">
+  <div class="section-title">Flujo 2</div>
+  <h2>Nurturing multi-canal</h2>
+  <p class="section-desc">Secuencias inteligentes que se adaptan al comportamiento de cada lead.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon trigger">⏰</div>
+          <div>
+            <div class="node-name">Scheduler</div>
+            <div class="node-type">TRIGGER TEMPORAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Se ejecuta cada 24 hs</li>
+          <li>Evalúa leads en pipeline</li>
+          <li>Detecta inactividad</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon ai">🧠</div>
+          <div>
+            <div class="node-name">Motor de Decisión</div>
+            <div class="node-type">INTELIGENCIA ARTIFICIAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Analiza historial del lead</li>
+          <li>Elige canal óptimo</li>
+          <li>Genera mensaje personalizado</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon condition">🔀</div>
+          <div>
+            <div class="node-name">Canal Selector</div>
+            <div class="node-type">DISTRIBUCIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>WhatsApp → respuestas rápidas</li>
+          <li>Email → contenido largo</li>
+          <li>Retargeting → recordatorio visual</li>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector-down"><svg><line x1="12" y1="0" x2="12" y2="48" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="8,42 12,48 16,42" fill="#e85d04"/></svg></div>
+
+    <div class="flow-split">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">💬</div>
+          <div>
+            <div class="node-name">WhatsApp</div>
+            <div class="node-type">CANAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Mensaje con beneficios</li>
+          <li>Demo interactiva</li>
+          <li>Botones de acción</li>
+        </div>
+      </div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">📧</div>
+          <div>
+            <div class="node-name">Email</div>
+            <div class="node-type">CANAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Secuencia de 5 emails</li>
+          <li>Casos de éxito</li>
+          <li>Comparativa de funciones</li>
+        </div>
+      </div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">🎯</div>
+          <div>
+            <div class="node-name">Retargeting</div>
+            <div class="node-type">CANAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Pixel de seguimiento</li>
+          <li>Audiencia personalizada</li>
+          <li>Anuncios específicos por etapa</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 3: AGENTE WHATSAPP -->
+<div class="section" style="background: #151525;">
+  <div class="section-title">Flujo 3</div>
+  <h2>Agente WhatsApp IA</h2>
+  <p class="section-desc">Atención 24/7 que resuelve, califica y escala cuando es necesario.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon trigger">📱</div>
+          <div>
+            <div class="node-name">Mensaje entrante</div>
+            <div class="node-type">TRIGGER WHATSAPP</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Lead escribe por WhatsApp</li>
+          <li>Puede ser texto, audio o imagen</li>
+          <li>Se activa en tiempo real</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon ai">🧠</div>
+          <div>
+            <div class="node-name">Agente IA</div>
+            <div class="node-type">INTELIGENCIA ARTIFICIAL</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Entiende contexto y tono</li>
+          <li>Accede a base de conocimiento</li>
+          <li>Responde en lenguaje natural</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon condition">🔀</div>
+          <div>
+            <div class="node-name">Evaluador</div>
+            <div class="node-type">DECISIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>¿Puede resolver solo? → Responde</li>
+          <li>¿Lead caliente? → Escala a humano</li>
+          <li>¿Consulta compleja? → Agenda call</li>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector-down"><svg><line x1="12" y1="0" x2="12" y2="48" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="8,42 12,48 16,42" fill="#e85d04"/></svg></div>
+
+    <div class="flow-split">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">✅</div>
+          <div>
+            <div class="node-name">Respuesta auto</div>
+            <div class="node-type">ACCIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Precios, funciones, soporte</li>
+          <li>Envía links y demos</li>
+          <li>80% de consultas resueltas</li>
+        </div>
+      </div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">🔔</div>
+          <div>
+            <div class="node-name">Escalamiento</div>
+            <div class="node-type">NOTIFICACIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Notifica a Salvador</li>
+          <li>Resumen de la conversación</li>
+          <li>Sugerencia de respuesta</li>
+        </div>
+      </div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon output">📅</div>
+          <div>
+            <div class="node-name">Agenda demo</div>
+            <div class="node-type">CONVERSIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Agenda automática con Calendly</li>
+          <li>Reminder 24hs antes</li>
+          <li>Follow-up post-demo</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 4: CONTENIDO AUTOMATIZADO -->
+<div class="section" style="background: #1a1a2e;">
+  <div class="section-title">Flujo 4</div>
+  <h2>Generación de contenido</h2>
+  <p class="section-desc">Contenido para redes y campañas generado por IA, aprobado por un humano.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon trigger">📊</div>
+          <div>
+            <div class="node-name">Datos de mercado</div>
+            <div class="node-type">INPUT</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Tendencias del sector</li>
+          <li>Preguntas frecuentes de leads</li>
+          <li>Competencia y novedades</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon ai">🧠</div>
+          <div>
+            <div class="node-name">Creador IA</div>
+            <div class="node-type">GENERACIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Posts para Instagram/Facebook</li>
+          <li>Copy para anuncios</li>
+          <li>Scripts para reels/stories</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">👤</div>
+          <div>
+            <div class="node-name">Aprobación</div>
+            <div class="node-type">HUMANO EN EL LOOP</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Salvador revisa y aprueba</li>
+          <li>Edita si hace falta</li>
+          <li>Un click para publicar</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 5: RED DE INFLUENCERS -->
+<div class="section" style="background: #151525;">
+  <div class="section-title">Flujo 5</div>
+  <h2>Red de influencers</h2>
+  <p class="section-desc">Gestión automatizada de referidos con tracking y comisiones.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon trigger">🤝</div>
+          <div>
+            <div class="node-name">Influencer registra</div>
+            <div class="node-type">TRIGGER</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Se registra como referidor</li>
+          <li>Recibe link único de tracking</li>
+          <li>Material listo para compartir</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon data">📈</div>
+          <div>
+            <div class="node-name">Tracking</div>
+            <div class="node-type">MONITOREO</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Clicks, registros, conversiones</li>
+          <li>Atribución por influencer</li>
+          <li>Reportes automáticos</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon action">💰</div>
+          <div>
+            <div class="node-name">Comisiones</div>
+            <div class="node-type">LIQUIDACIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Cálculo automático por conversión</li>
+          <li>Reporte mensual al influencer</li>
+          <li>Dashboard de performance</li>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW 6: DASHBOARD -->
+<div class="section" style="background: #1a1a2e;">
+  <div class="section-title">Flujo 6</div>
+  <h2>Dashboard de métricas</h2>
+  <p class="section-desc">Todo se mide. Todo se optimiza. En tiempo real.</p>
+
+  <div class="workflow-canvas">
+    <div class="workflow-row">
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon data">📊</div>
+          <div>
+            <div class="node-name">Agregador</div>
+            <div class="node-type">DATA PIPELINE</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Datos de todos los flujos</li>
+          <li>Meta Ads + WhatsApp + Email</li>
+          <li>Actualización cada hora</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon ai">🧠</div>
+          <div>
+            <div class="node-name">Análisis IA</div>
+            <div class="node-type">INSIGHTS</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>ROI por canal y campaña</li>
+          <li>Predicción de conversión</li>
+          <li>Alertas de anomalías</li>
+        </div>
+      </div>
+
+      <div class="connector"><svg><line x1="0" y1="12" x2="48" y2="12" stroke="#e85d04" stroke-width="2" stroke-dasharray="6,4"/><polygon points="42,8 48,12 42,16" fill="#e85d04"/></svg></div>
+
+      <div class="node">
+        <div class="node-header">
+          <div class="node-icon output">📱</div>
+          <div>
+            <div class="node-name">Dashboard</div>
+            <div class="node-type">VISUALIZACIÓN</div>
+          </div>
+        </div>
+        <div class="node-body">
+          <li>Métricas en tiempo real</li>
+          <li>Acceso desde cualquier dispositivo</li>
+          <li>Reportes automáticos semanales</li>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Flujos automatizados</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">24/7</div>
+      <div class="stat-label">Operación continua</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">1</div>
+      <div class="stat-label">Persona supervisando</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">&lt;30s</div>
+      <div class="stat-label">Tiempo de respuesta</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="logo-bar" style="margin-bottom: 24px;">CEL STOCK</div>
+  <h2>Sistema completo.<br>Automatizado. Inteligente.</h2>
+  <p style="margin-top: 16px;">Presentado por Salvador</p>
+</div>
+
+</body>
+</html>
