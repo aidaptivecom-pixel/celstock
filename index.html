@@ -289,85 +289,6 @@
   .section-tag.orange { background: rgba(255,183,77,0.12); border-color: rgba(255,183,77,0.25); color: #FFB74D; }
 
   .small-text { font-size: 14px; color: rgba(255,255,255,0.4); margin-top: 16px; }
-
-  /* MOBILE RESPONSIVE */
-  @media (max-width: 768px) {
-    .slide {
-      padding: 30px 24px;
-      overflow-y: auto;
-      justify-content: flex-start;
-      padding-top: 50px;
-      padding-bottom: 80px;
-    }
-    h1 { font-size: 36px; letter-spacing: -1px; }
-    h2 { font-size: 26px; letter-spacing: -0.5px; margin-bottom: 16px; }
-    h3 { font-size: 14px; margin-bottom: 12px; }
-    p { font-size: 16px; }
-    .subtitle { font-size: 18px; margin-bottom: 24px; }
-    
-    .stats { grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
-    .stat { padding: 18px; }
-    .stat-number { font-size: 28px; }
-    .stat-label { font-size: 13px; }
-    
-    .cards { grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
-    .cards.three { grid-template-columns: 1fr; }
-    .card { padding: 20px; }
-    .card h4 { font-size: 16px; }
-    .card p { font-size: 14px; }
-    
-    .items li { font-size: 16px; padding: 10px 0; }
-    .items li span.icon { font-size: 18px; margin-right: 8px; }
-    
-    .flow-step { font-size: 14px; padding: 12px 18px; }
-    .flow-arrow { font-size: 18px; padding: 2px 0 2px 14px; }
-    
-    .eco-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .eco-hub { font-size: 18px; padding: 14px 24px; }
-    .eco-node { padding: 14px; }
-    .eco-node .eco-icon { font-size: 22px; }
-    .eco-node .eco-title { font-size: 12px; }
-    .eco-node .eco-desc { font-size: 11px; }
-    
-    .hflow { gap: 6px; }
-    .hflow-step { font-size: 12px; padding: 6px 10px; }
-    .hflow-arrow { font-size: 14px; }
-    
-    .timeline-item { flex-direction: column; gap: 8px; }
-    .timeline-badge { min-width: auto; }
-    .timeline-content h4 { font-size: 16px; }
-    .timeline-content p { font-size: 14px; }
-    
-    .benefits { gap: 12px; }
-    .benefit { font-size: 16px; gap: 12px; }
-    .benefit-icon { width: 34px; height: 34px; font-size: 16px; }
-    
-    .steps { margin-top: 24px; }
-    .step { font-size: 16px; gap: 14px; padding: 14px 0; }
-    .step-num { width: 34px; height: 34px; font-size: 14px; }
-    
-    .inv-table { margin-top: 20px; }
-    .inv-row { font-size: 15px; flex-direction: column; gap: 4px; padding: 12px 0; }
-    
-    .logo-bar { font-size: 11px; top: 16px; left: 24px; }
-    .section-tag { font-size: 11px; margin-bottom: 12px; }
-    .tag { font-size: 12px; }
-    .usa-badge { font-size: 13px; margin-top: 20px; }
-    
-    .nav button { width: 38px; height: 38px; font-size: 16px; }
-    .slide-counter { bottom: 20px; right: 24px; font-size: 12px; }
-    .nav { bottom: 20px; }
-    
-    .cover-content { padding-top: 20px; }
-  }
-
-  @media (max-width: 400px) {
-    .slide { padding: 20px 16px; padding-top: 44px; padding-bottom: 70px; }
-    h1 { font-size: 30px; }
-    h2 { font-size: 22px; }
-    .stats { grid-template-columns: 1fr; }
-    .eco-grid { grid-template-columns: 1fr; }
-  }
 </style>
 </head>
 <body>
@@ -762,38 +683,8 @@
   </div>
 </div>
 
-<!-- SLIDE 16: INVERSION -->
-<div class="slide" id="s16">
-  <div class="logo-bar">CEL STOCK</div>
-  <h3>Inversión estimada</h3>
-  <h2>Estructura de costos<br>escalable y eficiente</h2>
-  <div class="inv-table">
-    <div class="inv-row">
-      <span class="inv-label">📣 Meta + Google Ads (mensual)</span>
-      <span class="inv-value accent">USD 500 — 2,000</span>
-    </div>
-    <div class="inv-row">
-      <span class="inv-label">🤝 Red de influencers (comisiones)</span>
-      <span class="inv-value accent">Variable por conversión</span>
-    </div>
-    <div class="inv-row">
-      <span class="inv-label">⚙️ Infraestructura (IA, hosting, WhatsApp API)</span>
-      <span class="inv-value accent">USD 150 — 300/mes</span>
-    </div>
-    <div class="inv-row">
-      <span class="inv-label">🚀 Setup inicial (ecosistema completo)</span>
-      <span class="inv-value accent">A definir (one-time)</span>
-    </div>
-    <div class="inv-row" style="border-bottom: none;">
-      <span class="inv-label">👤 Operación</span>
-      <span class="inv-value accent-green">Salvador supervisa desde dashboard</span>
-    </div>
-  </div>
-  <p style="margin-top: 32px; font-size: 16px;">Todo escala según resultados. Se invierte más en lo que funciona, se corta lo que no.</p>
-</div>
-
 <!-- SLIDE 17: BENEFICIOS -->
-<div class="slide" id="s17">
+<div class="slide" id="s16">
   <div class="logo-bar">CEL STOCK</div>
   <h3>Beneficios para New Life</h3>
   <h2>Expansión a LATAM<br>sin costo de equipo</h2>
@@ -826,7 +717,7 @@
 </div>
 
 <!-- SLIDE 18: NEXT STEPS -->
-<div class="slide" id="s18">
+<div class="slide" id="s17">
   <div class="logo-bar">CEL STOCK</div>
   <h3>Próximos pasos</h3>
   <h2>De la aprobación<br>al lanzamiento</h2>
@@ -859,7 +750,7 @@
 </div>
 
 <!-- SLIDE 19: CIERRE -->
-<div class="slide" id="s19">
+<div class="slide" id="s18">
   <div class="cover-bg"></div>
   <div class="cover-content" style="text-align: center; align-items: center;">
     <h1 style="font-size: 56px;">CEL STOCK<br><span class="accent">Argentina</span></h1>
@@ -870,7 +761,7 @@
 </div>
 
 <!-- NAVIGATION -->
-<div class="slide-counter" id="counter">1 / 19</div>
+<div class="slide-counter" id="counter">1 / 18</div>
 <div class="nav">
   <button onclick="prev()">←</button>
   <button onclick="next()">→</button>
