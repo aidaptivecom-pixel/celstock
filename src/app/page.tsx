@@ -2,6 +2,8 @@
 import Shell from "@/components/Shell";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Users, TrendingUp, Image, Eye, Clock, Bell, Heart, ArrowUpRight, Sparkles, LayoutGrid, Film } from "lucide-react";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { Particles } from "@/components/ui/particles";
 
 const kpis = [
   { icon: Users, label: "Seguidores", value: "22", change: "+3 esta semana", up: true },
@@ -43,6 +45,9 @@ const colorMap: Record<string, string> = { warning: "text-warning", danger: "tex
 export default function Dashboard() {
   return (
     <Shell>
+      <div className="relative">
+        <Particles className="absolute inset-0 -z-10" quantity={40} color="#7c3aed" size={0.4} />
+      </div>
       <div className="mb-6">
         <h1 className="text-xl font-bold">Dashboard</h1>
         <p className="text-[13px] text-muted mt-0.5">@celstockusa · Resumen de tu cuenta</p>
@@ -51,7 +56,8 @@ export default function Dashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
         {kpis.map((k) => (
-          <div key={k.label} className="bg-surface border border-border rounded-2xl p-4 hover:border-primary/20 transition-colors">
+          <div key={k.label} className="relative bg-surface border border-border rounded-2xl p-4 hover:border-primary/20 transition-colors overflow-hidden">
+            <BorderBeam size={60} duration={8} colorFrom="#7c3aed" colorTo="#06b6d4" borderWidth={1.5} />
             <div className="flex items-center gap-2 mb-2">
               <k.icon size={15} className="text-muted" />
               <span className="text-[11px] text-muted font-medium">{k.label}</span>
